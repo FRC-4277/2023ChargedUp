@@ -17,10 +17,16 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
   public static class DriveTrainConstants{
-    public static final int FRONT_LEFT = 1;
-    public static final int FRONT_RIGHT = 2;
-    public static final int BACK_LEFT = 3;
-    public static final int BACK_RIGHT = 4;
+    public static final int LEFT_FRONT = 1;
+    public static final int LEFT_BACK = 2;
+    public static final int LEFT_TOP = 3;
+    public static final int RIGHT_FRONT = 4;
+    public static final int RIGHT_BACK = 5;
+    public static final int RIGHT_TOP = 6;
+  
+    public static final int SOLENOID_LEFT = 1;
+    public static final int SOLENOID_RIGHT = 2;
   }
+
 
 }
