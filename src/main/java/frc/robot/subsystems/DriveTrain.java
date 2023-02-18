@@ -41,7 +41,7 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive drive = new DifferentialDrive(leftGroup, rightGroup);
 
-  private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.REVPH, SOLENOID_SHIFT);
+  private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.CTREPCM, SOLENOID_SHIFT);
 
   private AHRS navx = new AHRS(SerialPort.Port.kMXP);
 

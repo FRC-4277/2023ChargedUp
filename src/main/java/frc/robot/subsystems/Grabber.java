@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.GrabConstants.*;
 
 public class Grabber extends SubsystemBase {
-  private final Solenoid solenoidGrab = new Solenoid (PneumaticsModuleType.REVPH, SOLENOID_GRAB);
-  private final Solenoid solenoidTilt = new Solenoid (PneumaticsModuleType.REVPH, SOLENOID_TILT);
+  private final Solenoid solenoidGrab = new Solenoid (PneumaticsModuleType.CTREPCM, SOLENOID_GRAB);
+  private final Solenoid solenoidTilt = new Solenoid (PneumaticsModuleType.CTREPCM, SOLENOID_TILT);
   /** Creates a new Grabber. */
   public Grabber() {}
 
