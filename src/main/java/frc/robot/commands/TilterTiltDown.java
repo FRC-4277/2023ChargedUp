@@ -4,28 +4,17 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.DriveTrain;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Grabber;
 
-/** An example command that uses an example subsystem. */
-public class DriveManualCommand extends CommandBase {
-   private final DriveTrain driveTrain;
-   private final XboxController controller;
-   private final Joystick joystick;
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public DriveManualCommand(DriveTrain driveTrain, Joystick joystick, XboxController controller) {
-    this.driveTrain = driveTrain;
-    this.joystick = joystick;
-    this.controller = controller;
+public class TilterTiltDown extends CommandBase {
+  /** Creates a new TilterTiltDown. */
+  private final Grabber grabber;
+  /** Creates a new GrabReleaseGamePiece. */
+  public TilterTiltDown(Grabber grabber) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
+    this.grabber = grabber;
+    addRequirements(grabber);
   }
 
   // Called when the command is initially scheduled.
@@ -35,8 +24,9 @@ public class DriveManualCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveTrain.driveJoystick(joystick);
+    grabber.tiltDown();
   }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

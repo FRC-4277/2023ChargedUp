@@ -4,27 +4,20 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.DriveTrain;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DriveTrain;
 
-/** An example command that uses an example subsystem. */
-public class DriveManualCommand extends CommandBase {
-   private final DriveTrain driveTrain;
-   private final XboxController controller;
-   private final Joystick joystick;
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public DriveManualCommand(DriveTrain driveTrain, Joystick joystick, XboxController controller) {
-    this.driveTrain = driveTrain;
-    this.joystick = joystick;
-    this.controller = controller;
+public class DriveDistanceAndDirection extends CommandBase {
+  /** Creates a new DriveDistanceAndDirection. */
+  private final DriveTrain driveTrain;
+  private double initialDistance;
+  private double distance;
+  private double percentPower;
+  public DriveDistanceAndDirection(DriveTrain driveTrain, double distance, double percentPower) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.driveTrain = driveTrain;
+    this.distance = distance;
+    this.percentPower = percentPower;
     addRequirements(driveTrain);
   }
 
@@ -34,9 +27,8 @@ public class DriveManualCommand extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    driveTrain.driveJoystick(joystick);
-  }
+  public void execute() {}
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

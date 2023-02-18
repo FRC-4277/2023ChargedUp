@@ -10,9 +10,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class DriveManualCommand extends CommandBase {
+public class DriveJoystickCommand extends CommandBase {
    private final DriveTrain driveTrain;
-   private final XboxController controller;
    private final Joystick joystick;
 
   /**
@@ -20,10 +19,9 @@ public class DriveManualCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveManualCommand(DriveTrain driveTrain, Joystick joystick, XboxController controller) {
+  public DriveJoystickCommand(DriveTrain driveTrain, Joystick joystick) {
     this.driveTrain = driveTrain;
     this.joystick = joystick;
-    this.controller = controller;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
   }
