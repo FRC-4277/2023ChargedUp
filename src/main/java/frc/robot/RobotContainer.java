@@ -101,13 +101,15 @@ public class RobotContainer {
        
        
        //Joystick buttons
-       new JoystickButton(joystick, Button.kX.value)
+       //new JoystickButton(joystick, Button.kX.value)
+      //.onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
+      new JoystickButton(joystick, 3)
       .onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
 
-      new JoystickButton(joystick, Button.kLeftStick.value)
+      new JoystickButton(joystick, 5)
       .onTrue(new InstantCommand (() -> grabber.toggleGrab()));
        
-      new JoystickButton(joystick, Button.kY.value)
+      new JoystickButton(joystick, 4)
       .onTrue(new InstantCommand (() -> grabber.toggleTilt()));
       
 
