@@ -4,11 +4,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -41,42 +45,32 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive drive = new DifferentialDrive(leftGroup, rightGroup);
 
-  private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.REVPH, SOLENOID_SHIFT);
+  private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.CTREPCM, SOLENOID_SHIFT);
+
+  private Encoder leftEncoder = new Encoder (0,1);
+  private Encoder rightEncoder = new Encoder (2,3);
 
   private AHRS navx = new AHRS(SerialPort.Port.kMXP);
 
   private ShuffleboardTab autoTab = Shuffleboard.getTab(AUTO_TAB);
   public GenericEntry zAdjust = autoTab.add("Z Adjust", 0).getEntry();
 
-  // private AHRS navx = new AHRS(SerialPort.Port.kMXP);
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public CommandBase exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
+  public DriveTrain(){
+    TalonFXConfiguration configs = new TalonFXConfiguration();
+    configs.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+    leftTop.configAllSettings(configs);
+    rightTop.configAllSettings(configs);
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a
-   * digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+    leftTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+    rightTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
   }
+ 
 
   // public void drive(XboxController controller){
   // drive.arcadeDrive(controller.getRightX(), controller.getRightY());
-
+  public void driveWithDeadpan(Joystick joystick) {
+    
+  }
   public void driveJoystick(Joystick joystick) {
     reportToShuffleboard(joystick);
 
@@ -85,7 +79,7 @@ public class DriveTrain extends SubsystemBase {
   }
   public void driveTimed(int direction, double speed) {
     double howToDrive = direction * speed;
-    drive.tankDrive(howToDrive, howToDrive);
+    drive.tankDrive(0.3, -0.3);
   }
 
   public void stop() {
@@ -113,10 +107,10 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("NavX angle", navx.getAngle());
     //SmartDashboard.putNumber("Right Position", getRightPosition());
     //SmartDashboard.putNumber("Left Position", getLeftPosition());
-    //SmartDashboard.putNumber("Right Motor Output Percent", getRightMotorOutputPercent());
-    //SmartDashboard.putNumber("Left Motor Output Percent", getLeftMotorOutputPercent());
-    //SmartDashboard.putNumber("Right Selected Sensor Position", getRightSelectedSensorPosition());
-    //SmartDashboard.putNumber("Left Selected Sensor Position", getLeftSelectedSensorPosition());
+    SmartDashboard.putNumber("Right Motor Output Percent", getRightMotorOutputPercent());
+    SmartDashboard.putNumber("Left Motor Output Percent", getLeftMotorOutputPercent());
+    SmartDashboard.putNumber("Right Selected Sensor Position", getRightSelectedSensorPosition());
+    SmartDashboard.putNumber("Left Selected Sensor Position", getLeftSelectedSensorPosition());
   }
 
   @Override
@@ -152,17 +146,17 @@ public class DriveTrain extends SubsystemBase {
 
   }
   public double getRightMotorOutputPercent() {
-    return rightTop.getActiveTrajectoryPosition();
+    return rightTop.getMotorOutputPercent();
   }
   public double getLeftMotorOutputPercent() {
-    return leftTop.getActiveTrajectoryPosition();
+    return leftTop.getMotorOutputPercent();
     
   }
   public double getRightSelectedSensorPosition() {
-    return rightTop.getActiveTrajectoryPosition();
+    return rightTop.getSelectedSensorPosition();
   }
   public double getLeftSelectedSensorPosition(){
-    return leftTop.getActiveTrajectoryPosition();
+    return leftTop.getSelectedSensorPosition();
     
   }
 }

@@ -89,7 +89,7 @@ public class RobotContainer {
     //new Trigger(driveTrain::exampleCondition)
        // .onTrue(new DriveManualCommand(driveTrain, controller));
       
-       // Xbox Controller
+        //Xbox Controller
        new JoystickButton(controller, Button.kX.value)
        .onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
 
@@ -126,13 +126,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Commands.print( "No autonomous command configured.");
+    return (Command) autoChooser.getSelected();
   }
   private void setupAutonomousTab(){
     autoChooser = new SendableChooser<>();
     SendableRegistry.setName(autoChooser, "Autonomous Command");
     autoChooser.setDefaultOption("Nothing", null);
-    autoChooser.addOption("Drive Forward", new DriveAutoForwardTimedCommand(driveTrain, 2));
+    autoChooser.addOption("Drive Forward", new DriveAutoForwardTimedCommand(driveTrain, 4));
     autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(grabber, driveTrain));
     autonomousTab.add(autoChooser)
       .withPosition(0, 0)
