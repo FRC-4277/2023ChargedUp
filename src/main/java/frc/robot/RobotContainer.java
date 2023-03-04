@@ -6,19 +6,23 @@ package frc.robot;
 
 import frc.robot.commandGroups.ScoreAndDriveShort;
 import frc.robot.commands.DriveAutoForwardTimedCommand;
+import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveManualCommand;
 import frc.robot.commands.DriveShiftCommand;
 import frc.robot.commands.GrabCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.NewGrabber;
 
 import static frc.robot.Constants.Controllers.*;
 
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -47,6 +51,7 @@ public class RobotContainer {
   // Subsystems
   private final DriveTrain driveTrain = new DriveTrain();
   private final Grabber grabber = new Grabber();
+  private final NewGrabber newGrabber = new NewGrabber();
 
   //Controllers
   //private final XboxController controller =
@@ -61,6 +66,9 @@ public class RobotContainer {
     // Pneumatics
   private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
+  // Camera
+  UsbCamera camera = new UsbCamera("camera", 0);
+  
   //Commands
   private final DriveManualCommand driveManualCommand = new DriveManualCommand(driveTrain, joystick, controller);
   private final DriveShiftCommand driveShiftCommand = new DriveShiftCommand(driveTrain);
@@ -90,15 +98,23 @@ public class RobotContainer {
        // .onTrue(new DriveManualCommand(driveTrain, controller));
       
         //Xbox Controller
-       new JoystickButton(controller, Button.kX.value)
-       .onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
+       //new JoystickButton(controller, Axis.kLeftTrigger.value)
+       //.onTrue(new InstantCommand(() -> newGrabber.in()));
+       
+       //new JoystickButton(controller, Axis.kRightTrigger.value)
+       //.onTrue(new InstantCommand(() -> newGrabber.out()));
 
        new JoystickButton(controller, Button.kB.value)
-       .onTrue(new InstantCommand(() -> grabber.toggleGrab()));
+       .onTrue(new InstantCommand(() -> newGrabber.in()));
+
+       new JoystickButton(controller, Button.kA.value)
+      .onTrue(new InstantCommand(() -> newGrabber.stop()));
 
        new JoystickButton(controller, Button.kY.value)
-       .onTrue(new InstantCommand(() -> grabber.toggleTilt()));
+       .onTrue(new InstantCommand(() -> newGrabber.out()));
        
+       new JoystickButton(controller, Button.kX.value)
+       .onTrue(new InstantCommand(() -> newGrabber.stop()));
        
        //Joystick buttons
        //new JoystickButton(joystick, Button.kX.value)
@@ -106,11 +122,11 @@ public class RobotContainer {
       new JoystickButton(joystick, 3)
       .onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
 
-      new JoystickButton(joystick, 5)
-      .onTrue(new InstantCommand (() -> grabber.toggleGrab()));
+      //new JoystickButton(joystick, 5)
+      //.onTrue(new InstantCommand (() -> grabber.toggleGrab()));
        
-      new JoystickButton(joystick, 4)
-      .onTrue(new InstantCommand (() -> grabber.toggleTilt()));
+      //new JoystickButton(joystick, 4)
+      //.onTrue(new InstantCommand (() -> grabber.toggleTilt()));
       
 
 
@@ -134,6 +150,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", null);
     autoChooser.addOption("Drive Forward", new DriveAutoForwardTimedCommand(driveTrain, 4));
     autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(grabber, driveTrain));
+    autoChooser.addOption("Drive Distance", new DriveDistance(driveTrain, 1, 300, 0.5 ));
     autonomousTab.add(autoChooser)
       .withPosition(0, 0)
       .withSize(2, 1);

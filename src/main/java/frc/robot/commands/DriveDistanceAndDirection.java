@@ -12,30 +12,41 @@ public class DriveDistanceAndDirection extends CommandBase {
   private final DriveTrain driveTrain;
   private double initialDistance;
   private double distance;
+  private int direction;
+  private double percent;
   private double percentPower;
-  public DriveDistanceAndDirection(DriveTrain driveTrain, double distance, double percentPower) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public DriveDistanceAndDirection(DriveTrain driveTrain, int direction, double distance, double percent) {
     this.driveTrain = driveTrain;
+    this.direction = direction;
     this.distance = distance;
-    this.percentPower = percentPower;
+    this.percent = percent;
     addRequirements(driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    initialDistance = driveTrain.getRightSelectedSensorPosition();
+    driveTrain.driveDistance(direction, percent);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
-
+  public void end(boolean interrupted) {
+    driveTrain.stop();
+  }
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    System.out.println(" Start Drive Distance" + initialDistance + distance);
+    System.out.println(" start DriveDistance direction" + driveTrain.getRightSelectedSensorPosition());
+    return driveTrain.getRightSelectedSensorPosition() >= initialDistance + distance;
   }
 }

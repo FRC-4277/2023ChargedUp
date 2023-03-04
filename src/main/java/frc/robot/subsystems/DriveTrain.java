@@ -47,10 +47,10 @@ public class DriveTrain extends SubsystemBase {
 
   private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.CTREPCM, SOLENOID_SHIFT);
 
-  private Encoder leftEncoder = new Encoder (0,1);
-  private Encoder rightEncoder = new Encoder (2,3);
+  private final Encoder leftEncoder = new Encoder (0,1);
+  private final Encoder rightEncoder = new Encoder (2,3);
 
-  private AHRS navx = new AHRS(SerialPort.Port.kMXP);
+  private final AHRS navx = new AHRS(SerialPort.Port.kMXP);
 
   private ShuffleboardTab autoTab = Shuffleboard.getTab(AUTO_TAB);
   public GenericEntry zAdjust = autoTab.add("Z Adjust", 0).getEntry();
@@ -63,23 +63,33 @@ public class DriveTrain extends SubsystemBase {
 
     leftTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
     rightTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+    leftEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
+    rightEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
   }
  
 
-  // public void drive(XboxController controller){
-  // drive.arcadeDrive(controller.getRightX(), controller.getRightY());
+   public void drive(XboxController controller){
+   drive.arcadeDrive(controller.getRightX(), controller.getRightY());
+   }
   public void driveWithDeadpan(Joystick joystick) {
     
   }
   public void driveJoystick(Joystick joystick) {
+    drive.arcadeDrive((Math.pow(joystick.getZ(),3))*0.7, Math.pow(joystick.getY(),3)*0.7);
     reportToShuffleboard(joystick);
 
-    double adjustedZ = getAdjustedZ(joystick);
-    drive.arcadeDrive(adjustedZ, joystick.getY(), true);
+   // double adjustedZ = getAdjustedZ(joystick);
+   // drive.arcadeDrive(adjustedZ, joystick.getY(), true);
   }
   public void driveTimed(int direction, double speed) {
     double howToDrive = direction * speed;
-    drive.tankDrive(0.3, -0.3);
+    drive.tankDrive(howToDrive, -howToDrive);
+  }
+  public void driveDistance(int direction, double speed) {
+    System.out.println(" start DriveDistance direction" + direction);
+    System.out.println("start driveDistance speed" + speed);
+    double howToDrive = direction * speed;
+    drive.tankDrive(howToDrive, -howToDrive);
   }
 
   public void stop() {
@@ -96,6 +106,7 @@ public class DriveTrain extends SubsystemBase {
 
     // This method will be called once per scheduler run
   }
+  
 
   public void reportToShuffleboard(Joystick joystick) {
     SmartDashboard.putNumber("Joystick Z Value", joystick.getZ());
@@ -111,6 +122,11 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Motor Output Percent", getLeftMotorOutputPercent());
     SmartDashboard.putNumber("Right Selected Sensor Position", getRightSelectedSensorPosition());
     SmartDashboard.putNumber("Left Selected Sensor Position", getLeftSelectedSensorPosition());
+    SmartDashboard.putNumber("Encoder Left Speed", getLeftSpeed());
+    SmartDashboard.putNumber("Encoder Right Speed", getRightSpeed());
+    SmartDashboard.putNumber("Encoder Average Speed", getAverageEncoderSpeed());
+    SmartDashboard.putNumber("Encoder Left Distance", getLeftDistance());
+    SmartDashboard.putNumber("Encoder Right Distance", getRightDistance());
   }
 
   @Override
@@ -159,4 +175,31 @@ public class DriveTrain extends SubsystemBase {
     return leftTop.getSelectedSensorPosition();
     
   }
+  // Speed will be measured in meters/second
+  public double getLeftSpeed() {
+    return leftEncoder.getRate() / 1000; // Multiply by 1000 to convert from millimeters to meters
+  }
+  public double getRightSpeed() {
+    return rightEncoder.getRate() / 1000; // Multiply by 1000 to convert from millimeters to meters
+  }
+  public double getAverageEncoderSpeed() {
+    return (getLeftSpeed() + getRightSpeed()) / 2;
+  }
+
+  // Distance will be measured in meters
+  public double getLeftDistance() {
+    return leftEncoder.getDistance() / 1000; // Multiply by 1000 to convert from millimeters to meters
+  }
+  public double getRightDistance() {
+    return rightEncoder.getDistance() / 1000; // Multiply by 1000 to convert from millimeters to meters
+  }
+  public double getAverageEncoderDistance() {
+    return (getLeftDistance() + getRightDistance()) / 2;
+  }
+
+  // Zero the drivetrain encoders
+  public void resetEncoders() {
+		leftEncoder.reset();
+    rightEncoder.reset();
+	}
 }

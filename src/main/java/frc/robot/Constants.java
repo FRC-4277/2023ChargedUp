@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -29,6 +31,9 @@ public final class Constants {
     public static final int RIGHT_FRONT = 7;
     public static final int RIGHT_BACK = 8;
     public static final int RIGHT_TOP = 3;
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
+    public static final double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
+    public static final double TRACK_WIDTH = Units.inchesToMeters(20.5);
 
     public static final int SOLENOID_SHIFT = 0;
   }
@@ -38,6 +43,8 @@ public final class Constants {
     public static final int SOLENOID_TILT = 1;
     public static final boolean GRAB = true;
     public static final boolean TILT = true;
+    public static final int TOP = 60;
+    public static final int BOTTOM = 44;
   }
 
   public static class ShuffleboardConstants {
