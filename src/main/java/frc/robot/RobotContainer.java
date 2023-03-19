@@ -9,10 +9,9 @@ import frc.robot.commands.DriveAutoForwardTimedCommand;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveManualCommand;
 import frc.robot.commands.DriveShiftCommand;
-import frc.robot.commands.GrabCommand;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Grabber;
-import frc.robot.subsystems.NewGrabber;
+import frc.robot.subsystems.Plunger;
+import frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.Controllers.*;
 
@@ -50,8 +49,8 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveTrain driveTrain = new DriveTrain();
-  private final Grabber grabber = new Grabber();
-  private final NewGrabber newGrabber = new NewGrabber();
+  private final Plunger plunger = new Plunger();
+  private final Intake newGrabber = new Intake();
 
   //Controllers
   //private final XboxController controller =
@@ -72,7 +71,6 @@ public class RobotContainer {
   //Commands
   private final DriveManualCommand driveManualCommand = new DriveManualCommand(driveTrain, joystick, controller);
   private final DriveShiftCommand driveShiftCommand = new DriveShiftCommand(driveTrain);
-  private final GrabCommand grabCommand = new GrabCommand(grabber);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -121,6 +119,9 @@ public class RobotContainer {
       //.onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
       new JoystickButton(joystick, 3)
       .onTrue(new InstantCommand(() -> driveTrain.toggleShift()));
+      
+      new JoystickButton(joystick, 4)
+      .onTrue(new InstantCommand(() -> plunger.togglePlunger()));
 
       //new JoystickButton(joystick, 5)
       //.onTrue(new InstantCommand (() -> grabber.toggleGrab()));
@@ -149,7 +150,7 @@ public class RobotContainer {
     SendableRegistry.setName(autoChooser, "Autonomous Command");
     autoChooser.setDefaultOption("Nothing", null);
     autoChooser.addOption("Drive Forward", new DriveAutoForwardTimedCommand(driveTrain, 4));
-    autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(grabber, driveTrain));
+    autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(plunger, driveTrain));
     autoChooser.addOption("Drive Distance", new DriveDistance(driveTrain, 1, 300, 0.5 ));
     autonomousTab.add(autoChooser)
       .withPosition(0, 0)

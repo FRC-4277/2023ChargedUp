@@ -5,15 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Grabber;
 
-public class GrabRelease extends CommandBase {
-  private final Grabber grabber;
-  /** Creates a new GrabReleaseGamePiece. */
-  public GrabRelease(Grabber grabber) {
+public class PlungerUp extends CommandBase {
+  /** Creates a new PlungerUp. */
+  public PlungerUp() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.grabber = grabber;
-    addRequirements(grabber);
   }
 
   // Called when the command is initially scheduled.
@@ -22,9 +18,7 @@ public class GrabRelease extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    grabber.release();
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

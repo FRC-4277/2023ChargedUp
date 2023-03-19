@@ -15,9 +15,13 @@ public class DriveDistance extends CommandBase {
   public double initialDistance;
   /** Creates a new DriveDistance. */
   public DriveDistance(DriveTrain driveTrain, int direction, double distance, double percent) {
+    
+
+    //TODO:  convert from inches to pulses for distance
     this.driveTrain = driveTrain;
     this.direction = direction;
     this.distance = distance;
+    //this.distance = driveTrain.nativeUnitsToDistanceMeters(distance);
     this.percent = percent;
     addRequirements(driveTrain);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -26,15 +30,15 @@ public class DriveDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    driveTrain.resetEncoders();
+    driveTrain.setRightSelectedSensorPosition(0);
     initialDistance = driveTrain.getRightSelectedSensorPosition();
-    driveTrain.driveDistance(direction, percent);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    driveTrain.driveDistance(direction, percent);
   }
 
   // Called once the command ends or is interrupted.
@@ -45,9 +49,13 @@ public class DriveDistance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    System.out.println(" Start Drive Distance" + initialDistance + distance);
-    System.out.println("Distance requested");
-    System.out.println(" start DriveDistance direction" + driveTrain.getRightSelectedSensorPosition());
-    return driveTrain.getRightSelectedSensorPosition() >= initialDistance + distance;
+    driveTrain.reportToShuffleboard(null);
+    double currentPosition =  (-1* driveTrain.getRightSelectedSensorPosition()) ;
+    boolean shouldStop = currentPosition > distance;
+
+    System.out.println(" Asked for Distance " + distance);
+    System.out.println(" Current position " + currentPosition);
+    System.out.println(" Should stop driving " + shouldStop);
+    return shouldStop;
   }
 }

@@ -36,6 +36,12 @@ public final class Constants {
     public static final double TRACK_WIDTH = Units.inchesToMeters(20.5);
 
     public static final int SOLENOID_SHIFT = 0;
+    public static final int SOLENOID_PLUNGER = 3;
+  }
+  public static class PlungerConstants {
+    public static final int SOLENOID_PLUNGER = 3;
+    public static final boolean UP = true;
+    public static final boolean DOWN = true;
   }
 
   public static class GrabConstants {

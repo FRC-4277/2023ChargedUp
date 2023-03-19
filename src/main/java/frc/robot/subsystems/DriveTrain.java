@@ -4,12 +4,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Encoder;
@@ -50,6 +53,9 @@ public class DriveTrain extends SubsystemBase {
   private final Encoder leftEncoder = new Encoder (0,1);
   private final Encoder rightEncoder = new Encoder (2,3);
 
+  //private final SlewRateLimiter speedLimiter = new SlewRateLimiter(0.8);
+  //private final SlewRateLimiter twistLimiter = new SlewRateLimiter(0.8);
+
   private final AHRS navx = new AHRS(SerialPort.Port.kMXP);
 
   private ShuffleboardTab autoTab = Shuffleboard.getTab(AUTO_TAB);
@@ -60,6 +66,9 @@ public class DriveTrain extends SubsystemBase {
     configs.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
     leftTop.configAllSettings(configs);
     rightTop.configAllSettings(configs);
+
+    leftTop.setNeutralMode(NeutralMode.Brake);
+    rightTop.setNeutralMode(NeutralMode.Brake);
 
     leftTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
     rightTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
@@ -75,6 +84,8 @@ public class DriveTrain extends SubsystemBase {
     
   }
   public void driveJoystick(Joystick joystick) {
+   // drive.arcadeDrive(speedLimiter.calculate(joystick.getZ()), twistLimiter.calculate(joystick.getY()));
+    
     drive.arcadeDrive((Math.pow(joystick.getZ(),3))*0.7, Math.pow(joystick.getY(),3)*0.7);
     reportToShuffleboard(joystick);
 
@@ -175,6 +186,11 @@ public class DriveTrain extends SubsystemBase {
     return leftTop.getSelectedSensorPosition();
     
   }
+  public void setRightSelectedSensorPosition(double position) {
+    ErrorCode error = rightTop.setSelectedSensorPosition(position);
+    System.out.println("Set to zero " + error);  
+
+  }
   // Speed will be measured in meters/second
   public double getLeftSpeed() {
     return leftEncoder.getRate() / 1000; // Multiply by 1000 to convert from millimeters to meters
@@ -202,4 +218,5 @@ public class DriveTrain extends SubsystemBase {
 		leftEncoder.reset();
     rightEncoder.reset();
 	}
+  
 }

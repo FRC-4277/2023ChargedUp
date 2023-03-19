@@ -27,6 +27,7 @@ public class DriveDistanceAndDirection extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    driveTrain.getRightSelectedSensorPosition();
     initialDistance = driveTrain.getRightSelectedSensorPosition();
     driveTrain.driveDistance(direction, percent);
   }
