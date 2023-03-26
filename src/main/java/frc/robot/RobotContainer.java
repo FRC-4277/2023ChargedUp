@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import frc.robot.commandGroups.DriveOverForwardAndBackOnBalance;
 import frc.robot.commandGroups.ScoreAndDriveShort;
 import frc.robot.commands.DriveAutoForwardTimedCommand;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveManualCommand;
+import frc.robot.commands.DriveOnChargeStationCommand;
 import frc.robot.commands.DriveShiftCommand;
+import frc.robot.commands.IntakeIn;
+import frc.robot.commands.IntakeOut;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Plunger;
 import frc.robot.subsystems.Intake;
@@ -50,7 +54,7 @@ public class RobotContainer {
   // Subsystems
   private final DriveTrain driveTrain = new DriveTrain();
   private final Plunger plunger = new Plunger();
-  private final Intake newGrabber = new Intake();
+  private final Intake intake = new Intake();
 
   //Controllers
   //private final XboxController controller =
@@ -81,6 +85,10 @@ public class RobotContainer {
     setupAutonomousTab();
   }
 
+  public void initilizeSensors(){
+    driveTrain.initilizeSensors();
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -102,17 +110,19 @@ public class RobotContainer {
        //new JoystickButton(controller, Axis.kRightTrigger.value)
        //.onTrue(new InstantCommand(() -> newGrabber.out()));
 
-       new JoystickButton(controller, Button.kB.value)
-       .onTrue(new InstantCommand(() -> newGrabber.in()));
+       //new JoystickButton(controller, Button.kB.value)
+       //.whileHeld(driveManualCommand)(new InstantCommand(() -> newGrabber.in()));
+       new JoystickButton(controller, Button.kX.value)
+       .whileTrue(new IntakeIn(intake));
 
-       new JoystickButton(controller, Button.kA.value)
-      .onTrue(new InstantCommand(() -> newGrabber.stop()));
+       //new JoystickButton(controller, Button.kA.value)
+      //.whileTrue(new InstantCommand(() -> newGrabber.stop()));
 
        new JoystickButton(controller, Button.kY.value)
-       .onTrue(new InstantCommand(() -> newGrabber.out()));
+       .whileTrue(new IntakeOut(intake));
        
-       new JoystickButton(controller, Button.kX.value)
-       .onTrue(new InstantCommand(() -> newGrabber.stop()));
+       //new JoystickButton(controller, Button.kX.value)
+       //.onTrue(new InstantCommand(() -> newGrabber.stop()));
        
        //Joystick buttons
        //new JoystickButton(joystick, Button.kX.value)
@@ -149,9 +159,10 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     SendableRegistry.setName(autoChooser, "Autonomous Command");
     autoChooser.setDefaultOption("Nothing", null);
-    autoChooser.addOption("Drive Forward", new DriveAutoForwardTimedCommand(driveTrain, 4));
+    autoChooser.addOption("Drive Over And Back and Balance", new DriveOverForwardAndBackOnBalance(driveTrain, joystick));
+    autoChooser.addOption("Drive Forward Timed", new DriveAutoForwardTimedCommand(driveTrain, 4));
     autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(plunger, driveTrain));
-    autoChooser.addOption("Drive Distance", new DriveDistance(driveTrain, 1, 300, 0.5 ));
+    autoChooser.addOption("Drive on Charge station", new DriveOnChargeStationCommand(driveTrain));
     autonomousTab.add(autoChooser)
       .withPosition(0, 0)
       .withSize(2, 1);

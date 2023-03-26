@@ -34,12 +34,25 @@ public final class Constants {
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
     public static final double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
     public static final double TRACK_WIDTH = Units.inchesToMeters(20.5);
+    public static final int COUNTS_PER_REVOLUTION = 4096;
+    public static final double GEAR_RATIO = 10.86;
+    public static final int WHEEL_RADIUS = 3;
 
-    public static final int SOLENOID_SHIFT = 0;
-    public static final int SOLENOID_PLUNGER = 3;
+    public static final double kTurnP = 1;
+    public static final double kTurnI = 0;
+    public static final double kTurnD = 0;
+
+    public static final double kMaxTurnRateDegPerS = 100;
+    public static final double kMaxTurnAccelerationDegPerSSquared = 300;
+
+    public static final double kTurnToleranceDeg = 5;
+    public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
+    public static final boolean kGyroReversed = false;
+
+    public static final int SOLENOID_SHIFT = 2;
   }
   public static class PlungerConstants {
-    public static final int SOLENOID_PLUNGER = 3;
+    public static final int SOLENOID_PLUNGER = 0;
     public static final boolean UP = true;
     public static final boolean DOWN = true;
   }
@@ -49,8 +62,29 @@ public final class Constants {
     public static final int SOLENOID_TILT = 1;
     public static final boolean GRAB = true;
     public static final boolean TILT = true;
-    public static final int TOP = 60;
-    public static final int BOTTOM = 44;
+    public static final int TOP = 8;
+    public static final int BOTTOM = 9;
+  }
+  public static class Balance {
+    public static final double BALANCED_DRIVE_KP = 0.015; // P (Proportional) constant of a PID loop
+    public static final double BALANCE_GOAL_DEGREES = 0;
+    public static final double BALANCE_ANGLE_TRESHOLD_DEGREES = 0.5;
+    public static final double BALANCE_BACKWARD_MULTIPLIER = 1.35;
+  }
+
+  public static class Lights {
+      public static final int BLUE_R = 0;
+      public static final int BLUE_G = 0;
+      public static final int BLUE_B = 50;
+  
+      public static final int ORANGE_R = 50;
+      public static final int ORANGE_G = 10;
+      public static final int ORANGE_B = 0;
+  
+      public static final int RAINBOW_FIRST_HUE = 1;
+    
+      public static final int CHASE_DELAY_MS = 100; // Make a multiple of 20ms
+      public static final int CHASE_COMMAND_FREQUENCY = CHASE_DELAY_MS / 20;
   }
 
   public static class ShuffleboardConstants {

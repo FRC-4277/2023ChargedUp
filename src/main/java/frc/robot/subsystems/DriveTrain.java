@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Encoder;
@@ -31,6 +32,8 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveTrainConstants;
+
 import static frc.robot.Constants.DriveTrainConstants.*;
 import static frc.robot.Constants.ShuffleboardConstants.*;
 
@@ -69,11 +72,16 @@ public class DriveTrain extends SubsystemBase {
 
     leftTop.setNeutralMode(NeutralMode.Brake);
     rightTop.setNeutralMode(NeutralMode.Brake);
+    // leftBack.setNeutralMode(NeutralMode.Brake);
+    // rightBack.setNeutralMode(NeutralMode.Brake);
+    // leftFront.setNeutralMode(NeutralMode.Brake);
+    // rightFront.setNeutralMode(NeutralMode.Brake);
 
     leftTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
     rightTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
     leftEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
     rightEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
+
   }
  
 
@@ -82,6 +90,10 @@ public class DriveTrain extends SubsystemBase {
    }
   public void driveWithDeadpan(Joystick joystick) {
     
+  }
+  public void initilizeSensors() {
+    setRightSelectedSensorPosition(0);
+    zeroGyro();
   }
   public void driveJoystick(Joystick joystick) {
    // drive.arcadeDrive(speedLimiter.calculate(joystick.getZ()), twistLimiter.calculate(joystick.getY()));
@@ -102,6 +114,14 @@ public class DriveTrain extends SubsystemBase {
     double howToDrive = direction * speed;
     drive.tankDrive(howToDrive, -howToDrive);
   }
+  public void turnToAngle(double speed, double requestedDegrees) {
+    System.out.println("start turn to angle");
+    //TODO:  Let's try adding speed to the other side
+    drive.tankDrive(speed, speed);
+  }
+  public void driveForBalance(double leftPercentPower, double rightPercentPower) {
+    drive.tankDrive(leftPercentPower, rightPercentPower);
+  }
 
   public void stop() {
     drive.stopMotor();
@@ -120,9 +140,7 @@ public class DriveTrain extends SubsystemBase {
   
 
   public void reportToShuffleboard(Joystick joystick) {
-    SmartDashboard.putNumber("Joystick Z Value", joystick.getZ());
-    SmartDashboard.putNumber("Joystick Adjusted Z Value", getAdjustedZ(joystick));
-    SmartDashboard.putNumber("Joystick Y Value", joystick.getY());
+
     SmartDashboard.putNumber("NavX yaw", navx.getYaw());
     SmartDashboard.putNumber("NavX pitch", navx.getPitch());
     SmartDashboard.putNumber("NavX roll", navx.getRoll());
@@ -138,6 +156,11 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Encoder Average Speed", getAverageEncoderSpeed());
     SmartDashboard.putNumber("Encoder Left Distance", getLeftDistance());
     SmartDashboard.putNumber("Encoder Right Distance", getRightDistance());
+    if (joystick != null) {
+      SmartDashboard.putNumber("Joystick Z Value", joystick.getZ());
+      SmartDashboard.putNumber("Joystick Adjusted Z Value", getAdjustedZ(joystick));
+      SmartDashboard.putNumber("Joystick Y Value", joystick.getY());
+    };
   }
 
   @Override
@@ -186,10 +209,41 @@ public class DriveTrain extends SubsystemBase {
     return leftTop.getSelectedSensorPosition();
     
   }
+  public double nativeUnitsToDistanceMeters(double sensorCounts) {
+    double motorRotations = (double)sensorCounts / COUNTS_PER_REVOLUTION;
+    double wheelRotations = motorRotations/GEAR_RATIO;
+    double positionInMeters = wheelRotations * (2*Math.PI * Units.inchesToMeters(wheelRotations));
+    return positionInMeters;
+  }
+
+  public double distanceToNativeUnits(double distanceInInches) {
+    double wheelRotations =  distanceInInches / (Math.PI * (WHEEL_DIAMETER));
+    double motorRotations = GEAR_RATIO * wheelRotations;
+    int sensorCounts = (int) motorRotations * COUNTS_PER_REVOLUTION;
+    return sensorCounts;
+
+  }
   public void setRightSelectedSensorPosition(double position) {
     ErrorCode error = rightTop.setSelectedSensorPosition(position);
     System.out.println("Set to zero " + error);  
 
+  }
+  public void zeroHeading() {
+    navx.reset();
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, from 180 to 180
+   */
+  public double getHeading() {
+    double heading = Math.IEEEremainder(navx.getAngle(), 360) * (DriveTrainConstants.kGyroReversed ? -1.0 : 1.0);
+    System.out.println("Heading" + heading );
+    return heading;
+  }
+  public double getTurnRate() {
+    return navx.getRate() * (DriveTrainConstants.kGyroReversed ? -1.0 : 1.0);
   }
   // Speed will be measured in meters/second
   public double getLeftSpeed() {
