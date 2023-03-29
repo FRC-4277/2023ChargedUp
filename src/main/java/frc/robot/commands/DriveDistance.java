@@ -15,13 +15,10 @@ public class DriveDistance extends CommandBase {
   public double initialDistance;
   /** Creates a new DriveDistance. */
   public DriveDistance(DriveTrain driveTrain, int direction, double distance, double percent) {
-    
-
-    //TODO:  convert from inches to pulses for distance
     this.driveTrain = driveTrain;
     this.direction = direction;
-    this.distance = distance;
-    //this.distance = driveTrain.nativeUnitsToDistanceMeters(distance);
+    //this.distance = distance;
+    this.distance = (double) driveTrain.countsGivenInches(distance);
     this.percent = percent;
     addRequirements(driveTrain);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,7 +28,7 @@ public class DriveDistance extends CommandBase {
   @Override
   public void initialize() {
     driveTrain.setRightSelectedSensorPosition(0);
-    initialDistance = driveTrain.getRightSelectedSensorPosition();
+    initialDistance = Math.abs(driveTrain.getRightSelectedSensorPosition());
 
   }
 
@@ -50,8 +47,10 @@ public class DriveDistance extends CommandBase {
   @Override
   public boolean isFinished() {
     driveTrain.reportToShuffleboard(null);
-    double currentPosition =  (-1* driveTrain.getRightSelectedSensorPosition()) ;
-    boolean shouldStop = currentPosition >= distance;
+    //double desiredPosition = Math.abs(initialDistance + distance);
+    double desiredPosition = Math.abs(distance);
+    double currentPosition =  Math.abs(driveTrain.getRightSelectedSensorPosition()) ;
+    boolean shouldStop = currentPosition >= desiredPosition;
 
     System.out.println(" Asked for Distance " + distance);
     System.out.println(" Current position " + currentPosition);

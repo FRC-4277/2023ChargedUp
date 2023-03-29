@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveTrainConstants;
 
 import static frc.robot.Constants.DriveTrainConstants.*;
@@ -53,11 +54,9 @@ public class DriveTrain extends SubsystemBase {
 
   private final Solenoid solenoidShift = new Solenoid(PneumaticsModuleType.CTREPCM, SOLENOID_SHIFT);
 
-  private final Encoder leftEncoder = new Encoder (0,1);
-  private final Encoder rightEncoder = new Encoder (2,3);
-
-  //private final SlewRateLimiter speedLimiter = new SlewRateLimiter(0.8);
-  //private final SlewRateLimiter twistLimiter = new SlewRateLimiter(0.8);
+  private final SlewRateLimiter speedLimiter = new SlewRateLimiter(2.5);
+  private final SlewRateLimiter twistLimiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter autoDriveLimiter = new SlewRateLimiter(1);
 
   private final AHRS navx = new AHRS(SerialPort.Port.kMXP);
 
@@ -79,8 +78,6 @@ public class DriveTrain extends SubsystemBase {
 
     leftTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
     rightTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-    leftEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
-    rightEncoder.setDistancePerPulse(WHEEL_CIRCUMFERENCE/360); //if am-3132
 
   }
  
@@ -96,9 +93,9 @@ public class DriveTrain extends SubsystemBase {
     zeroGyro();
   }
   public void driveJoystick(Joystick joystick) {
-   // drive.arcadeDrive(speedLimiter.calculate(joystick.getZ()), twistLimiter.calculate(joystick.getY()));
+   drive.arcadeDrive(twistLimiter.calculate(joystick.getZ()*0.8), speedLimiter.calculate(joystick.getY()));
     
-    drive.arcadeDrive((Math.pow(joystick.getZ(),3))*0.7, Math.pow(joystick.getY(),3)*0.7);
+   //drive.arcadeDrive((Math.pow(joystick.getZ(),3)), Math.pow(joystick.getY(),3));
     reportToShuffleboard(joystick);
 
    // double adjustedZ = getAdjustedZ(joystick);
@@ -111,7 +108,7 @@ public class DriveTrain extends SubsystemBase {
   public void driveDistance(int direction, double speed) {
     System.out.println(" start DriveDistance direction" + direction);
     System.out.println("start driveDistance speed" + speed);
-    double howToDrive = direction * speed;
+    double howToDrive = autoDriveLimiter.calculate(direction * speed);
     drive.tankDrive(howToDrive, -howToDrive);
   }
   public void turnToAngle(double speed, double requestedDegrees) {
@@ -151,11 +148,6 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Motor Output Percent", getLeftMotorOutputPercent());
     SmartDashboard.putNumber("Right Selected Sensor Position", getRightSelectedSensorPosition());
     SmartDashboard.putNumber("Left Selected Sensor Position", getLeftSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Left Speed", getLeftSpeed());
-    SmartDashboard.putNumber("Encoder Right Speed", getRightSpeed());
-    SmartDashboard.putNumber("Encoder Average Speed", getAverageEncoderSpeed());
-    SmartDashboard.putNumber("Encoder Left Distance", getLeftDistance());
-    SmartDashboard.putNumber("Encoder Right Distance", getRightDistance());
     if (joystick != null) {
       SmartDashboard.putNumber("Joystick Z Value", joystick.getZ());
       SmartDashboard.putNumber("Joystick Adjusted Z Value", getAdjustedZ(joystick));
@@ -223,6 +215,9 @@ public class DriveTrain extends SubsystemBase {
     return sensorCounts;
 
   }
+  public int countsGivenInches (double distance) {
+    return (int) Math.round(10.86 * 94/(3.1415* 6) * Constants.DriveTrainConstants.COUNTS_PER_REVOLUTION);
+  }
   public void setRightSelectedSensorPosition(double position) {
     ErrorCode error = rightTop.setSelectedSensorPosition(position);
     System.out.println("Set to zero " + error);  
@@ -246,31 +241,4 @@ public class DriveTrain extends SubsystemBase {
     return navx.getRate() * (DriveTrainConstants.kGyroReversed ? -1.0 : 1.0);
   }
   // Speed will be measured in meters/second
-  public double getLeftSpeed() {
-    return leftEncoder.getRate() / 1000; // Multiply by 1000 to convert from millimeters to meters
   }
-  public double getRightSpeed() {
-    return rightEncoder.getRate() / 1000; // Multiply by 1000 to convert from millimeters to meters
-  }
-  public double getAverageEncoderSpeed() {
-    return (getLeftSpeed() + getRightSpeed()) / 2;
-  }
-
-  // Distance will be measured in meters
-  public double getLeftDistance() {
-    return leftEncoder.getDistance() / 1000; // Multiply by 1000 to convert from millimeters to meters
-  }
-  public double getRightDistance() {
-    return rightEncoder.getDistance() / 1000; // Multiply by 1000 to convert from millimeters to meters
-  }
-  public double getAverageEncoderDistance() {
-    return (getLeftDistance() + getRightDistance()) / 2;
-  }
-
-  // Zero the drivetrain encoders
-  public void resetEncoders() {
-		leftEncoder.reset();
-    rightEncoder.reset();
-	}
-  
-}

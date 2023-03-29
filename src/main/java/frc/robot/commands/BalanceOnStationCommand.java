@@ -35,7 +35,7 @@ public class BalanceOnStationCommand extends CommandBase {
   @Override
   public void execute() {
      // Uncomment the line below this to simulate the gyroscope axis with a controller joystick
-    // Double currentAngle = -1 * joystick.getX() * 45;
+     //Double currentAngle = -1 * joystick.getX() * 45;
     //
     this.currentAngle = driveTrain.getPitch();
 

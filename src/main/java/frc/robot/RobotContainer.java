@@ -6,7 +6,10 @@ package frc.robot;
 
 import frc.robot.commandGroups.DriveOverForwardAndBackOnBalance;
 import frc.robot.commandGroups.ScoreAndDriveShort;
+import frc.robot.commandGroups.ScoreDriveBackwardsOnChargeStationAndBalance;
+import frc.robot.commands.BalanceOnStationCommand;
 import frc.robot.commands.DriveAutoForwardTimedCommand;
+import frc.robot.commands.DriveBackwardsOnChargeStationCommand;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveManualCommand;
 import frc.robot.commands.DriveOnChargeStationCommand;
@@ -16,6 +19,7 @@ import frc.robot.commands.IntakeOut;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Plunger;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 
 import static frc.robot.Constants.Controllers.*;
 
@@ -55,6 +59,7 @@ public class RobotContainer {
   private final DriveTrain driveTrain = new DriveTrain();
   private final Plunger plunger = new Plunger();
   private final Intake intake = new Intake();
+  private final Lights lights = new Lights();
 
   //Controllers
   //private final XboxController controller =
@@ -112,13 +117,13 @@ public class RobotContainer {
 
        //new JoystickButton(controller, Button.kB.value)
        //.whileHeld(driveManualCommand)(new InstantCommand(() -> newGrabber.in()));
-       new JoystickButton(controller, Button.kX.value)
+       new JoystickButton(controller, Button.kY.value)
        .whileTrue(new IntakeIn(intake));
 
        //new JoystickButton(controller, Button.kA.value)
       //.whileTrue(new InstantCommand(() -> newGrabber.stop()));
 
-       new JoystickButton(controller, Button.kY.value)
+       new JoystickButton(controller, Button.kX.value)
        .whileTrue(new IntakeOut(intake));
        
        //new JoystickButton(controller, Button.kX.value)
@@ -132,6 +137,10 @@ public class RobotContainer {
       
       new JoystickButton(joystick, 4)
       .onTrue(new InstantCommand(() -> plunger.togglePlunger()));
+
+      //new JoystickButton(joystick, 5)
+      //.whileTrue(new BalanceOnStationCommand(driveTrain, joystick));
+
 
       //new JoystickButton(joystick, 5)
       //.onTrue(new InstantCommand (() -> grabber.toggleGrab()));
@@ -163,6 +172,9 @@ public class RobotContainer {
     autoChooser.addOption("Drive Forward Timed", new DriveAutoForwardTimedCommand(driveTrain, 4));
     autoChooser.addOption("Score And Drive Short", new ScoreAndDriveShort(plunger, driveTrain));
     autoChooser.addOption("Drive on Charge station", new DriveOnChargeStationCommand(driveTrain));
+    autoChooser.addOption("Drive Backwards on Charge station", new DriveBackwardsOnChargeStationCommand(driveTrain));
+    autoChooser.addOption("Score And Drive Backwards on Charge station", new ScoreDriveBackwardsOnChargeStationAndBalance(driveTrain, intake, joystick));
+    autoChooser.addOption("Auto Balance test", new BalanceOnStationCommand(driveTrain, joystick));
     autonomousTab.add(autoChooser)
       .withPosition(0, 0)
       .withSize(2, 1);

@@ -34,7 +34,7 @@ public final class Constants {
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
     public static final double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
     public static final double TRACK_WIDTH = Units.inchesToMeters(20.5);
-    public static final int COUNTS_PER_REVOLUTION = 4096;
+    public static final int COUNTS_PER_REVOLUTION = 2048;
     public static final double GEAR_RATIO = 10.86;
     public static final int WHEEL_RADIUS = 3;
 
@@ -49,10 +49,10 @@ public final class Constants {
     public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
     public static final boolean kGyroReversed = false;
 
-    public static final int SOLENOID_SHIFT = 2;
+    public static final int SOLENOID_SHIFT = 3;
   }
   public static class PlungerConstants {
-    public static final int SOLENOID_PLUNGER = 0;
+    public static final int SOLENOID_PLUNGER = 1;
     public static final boolean UP = true;
     public static final boolean DOWN = true;
   }
@@ -62,8 +62,8 @@ public final class Constants {
     public static final int SOLENOID_TILT = 1;
     public static final boolean GRAB = true;
     public static final boolean TILT = true;
-    public static final int TOP = 8;
-    public static final int BOTTOM = 9;
+    public static final int TOP = 60;
+    public static final int BOTTOM = 44;
   }
   public static class Balance {
     public static final double BALANCED_DRIVE_KP = 0.015; // P (Proportional) constant of a PID loop

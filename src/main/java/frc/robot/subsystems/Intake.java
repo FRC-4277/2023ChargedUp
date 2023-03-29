@@ -33,8 +33,8 @@ public class Intake extends SubsystemBase {
    move(-1);
  }
  public void move(int direction){
-   top.set(-0.7 * -direction);
-   bottom.set(0.7 * direction);
+   top.set(1.0 * -direction);
+   bottom.set(1.0 * direction);
  }
  public void toggle(){
   

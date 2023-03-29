@@ -4,39 +4,44 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Intake;
 
-public class DriveShiftCommand extends CommandBase {
- 
-  private final DriveTrain driveTrain;
-   
-  /** Creates a new DriveShift. */
-
-  public DriveShiftCommand(DriveTrain driveTrain) {
+public class OuttakeTimed extends CommandBase {
+  private final Timer timer = new Timer();
+    private final double runTime;
+    private final Intake intake;
+  /** Creates a new OuttakeTimed. */
+  public OuttakeTimed(Intake intake, double runTime) {
+      this.intake = intake;
+      this.runTime = runTime;
+      addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
-    this.driveTrain = driveTrain;
-    addRequirements(driveTrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer.reset();
+    timer.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveTrain.toggleShift();
+    intake.in();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    intake.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return timer.get() >= runTime;
   }
 }
